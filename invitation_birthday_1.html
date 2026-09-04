@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Приглашение на день рождения</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+    background: linear-gradient(135deg, #6a3aa0 0%, #a83ab0 25%, #ff5e8f 55%, #ff9950 80%, #ffd35e 100%);
+    padding: 20px;
+    position: relative;
+  }
+
+  .card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 28px;
+    padding: 36px 28px;
+    max-width: 440px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(150, 50, 100, 0.35);
+    position: relative;
+    z-index: 5;
+    border: 2px solid #ffd1e0;
+  }
+
+  .emoji-row { font-size: 40px; margin-bottom: 6px; }
+
+  h1 {
+    color: #d6336c;
+    font-size: 24px;
+    margin: 10px 0 18px;
+  }
+
+  p.text {
+    color: #5c3a4a;
+    font-size: 17px;
+    line-height: 1.6;
+    margin-bottom: 22px;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 16px;
+    border-radius: 14px;
+    border: 2px solid #ffb3c6;
+    outline: none;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  button {
+    padding: 14px 32px;
+    font-size: 17px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: transform 0.15s ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    margin: 6px;
+  }
+
+  #startBtn, #yesBtn {
+    background: linear-gradient(135deg, #ff8fa3, #ff6b81);
+    color: white;
+    box-shadow: 0 8px 20px rgba(255, 107, 129, 0.4);
+  }
+  #startBtn:hover, #yesBtn:hover { transform: scale(1.05); }
+
+  #noBtn {
+    background: #ffffff;
+    color: #d6336c;
+    border: 2px solid #ffb3c6;
+  }
+
+  .step { display: none; }
+  .step.active { display: block; }
+
+  .no-msg {
+    color: #d6336c;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 14px 0;
+    min-height: 24px;
+  }
+
+  #answer p {
+    color: #5c3a4a;
+    font-size: 15.5px;
+    line-height: 1.7;
+    text-align: left;
+    margin: 4px 0;
+    white-space: pre-line;
+  }
+
+  #answer h2 {
+    color: #d6336c;
+    font-size: 22px;
+    margin-bottom: 14px;
+    text-align: center;
+  }
+
+  a.map-link {
+    color: #d6336c;
+    font-weight: 600;
+  }
+
+  .confetti {
+    position: fixed;
+    top: -10px;
+    z-index: 10;
+    pointer-events: none;
+    border-radius: 2px;
+  }
+
+  .sticker {
+    position: fixed;
+    font-size: 40px;
+    z-index: 1;
+    opacity: 0.85;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.15));
+    animation: floatSticker 5s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes floatSticker {
+    0%, 100% { transform: translateY(0) rotate(-6deg); }
+    50% { transform: translateY(-18px) rotate(6deg); }
+  }
+  @media (max-width: 480px) {
+    .sticker { font-size: 26px !important; opacity: 0.5; }
+  }
+</style>
+</head>
+<body>
+
+<div class="sticker" style="top: 6%; left: 5%; animation-delay: 0s;">🎂</div>
+<div class="sticker" style="top: 10%; right: 6%; animation-delay: 0.6s;">🎉</div>
+<div class="sticker" style="bottom: 10%; left: 6%; animation-delay: 1.2s;">🎈</div>
+<div class="sticker" style="bottom: 8%; right: 7%; animation-delay: 1.8s;">🎊</div>
+<div class="sticker" style="top: 45%; left: 2%; animation-delay: 2.2s;">✨</div>
+<div class="sticker" style="top: 45%; right: 2%; animation-delay: 0.9s;">🥳</div>
+
+<div class="card" id="card">
+
+  <!-- Шаг 1: ввод имени -->
+  <div class="step active" id="step-name">
+    <div class="emoji-row">🎂🎉🎈</div>
+    <h1>Приглашаю тебя на мой день рождения! 🎂</h1>
+    <p class="text">Прежде чем продолжить — как тебя зовут?</p>
+    <input type="text" id="nameInput" placeholder="Введите имя">
+    <br>
+    <button id="startBtn">Продолжить</button>
+  </div>
+
+  <!-- Шаг 2: вопрос -->
+  <div class="step" id="step-question">
+    <div class="emoji-row">🥳🎁🎶</div>
+    <h1 id="greetName">Привет!</h1>
+    <p class="text">Придёшь ко мне на день рождения?</p>
+    <div>
+      <button id="yesBtn">Да</button>
+      <button id="noBtn">Нет</button>
+    </div>
+    <div class="no-msg" id="noMsg"></div>
+  </div>
+
+  <!-- Шаг 3: ответ ДА -->
+  <div class="step" id="answer">
+    <h2>🎂 Ура!</h2>
+    <p id="reservationText"></p>
+  </div>
+
+</div>
+
+<script>
+  const BOT_TOKEN = "8970679898:AAEcuBMvt9FzW_5uC6XdKJTHsNvoe7SbRkg";
+  const CHAT_IDS = ["780754163", "798000141"];
+
+  let userName = "";
+  const noPhrases = [
+    "Ты уверена? 🤔",
+    "Точно-точно? 😏",
+    "Последний шанс передумать! 😢",
+    "Ты бьяка 😤 Напиши мне в личку, почему не придёшь"
+  ];
+  let noClickCount = 0;
+
+  function sendTelegramNotification(text) {
+    if (!BOT_TOKEN || BOT_TOKEN.indexOf("ВСТАВЬ") !== -1) return; // токен не настроен
+    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+    CHAT_IDS.forEach(function(id) {
+      fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: id, text: text })
+      }).catch(() => {});
+    });
+  }
+
+  function showStep(id) {
+    document.querySelectorAll(".step").forEach(el => el.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+  }
+
+  document.getElementById("startBtn").addEventListener("click", goNext);
+  document.getElementById("startBtn").addEventListener("touchstart", function(e){ e.preventDefault(); goNext(); }, { passive: false });
+
+  function goNext() {
+    const input = document.getElementById("nameInput");
+    const name = input.value.trim();
+    if (!name) {
+      input.style.border = "2px solid #ff3860";
+      input.placeholder = "Пожалуйста, введите имя!";
+      return;
+    }
+    userName = name;
+    document.getElementById("greetName").textContent = "Привет, " + userName + "!";
+    showStep("step-question");
+  }
+
+  const yesBtn = document.getElementById("yesBtn");
+  const noBtn = document.getElementById("noBtn");
+  const noMsg = document.getElementById("noMsg");
+
+  function handleYes(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const reservation =
+`Буду ждать тебя по этому адресу и в это время:
+
+📍 Достык, 4, караоке «Ария степи», зал «Караван-сарай»
+🕐 11.09.2026, 20:00
+
+❗️ Немного правил:
+• Вход с 21 года
+• Дресс-код — без спортивной и пляжной одежды
+• Действует фейс-контроль
+• Приходите с хорошим настроением 😊
+
+До встречи 🎶`;
+    document.getElementById("reservationText").textContent = reservation;
+    showStep("answer");
+    launchConfetti();
+    sendTelegramNotification(`✅ ${userName} нажал(а) ДА — придёт на день рождения!`);
+  }
+  yesBtn.addEventListener("click", handleYes);
+  yesBtn.addEventListener("touchstart", handleYes, { passive: false });
+
+  function handleNo(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    noMsg.textContent = noPhrases[noClickCount];
+    if (noClickCount >= noPhrases.length - 1) {
+      noBtn.style.display = "none";
+      sendTelegramNotification(`❌ ${userName} нажал(а) НЕТ и отказался(лась) приходить.`);
+    } else {
+      noClickCount++;
+    }
+  }
+  noBtn.addEventListener("click", handleNo);
+  noBtn.addEventListener("touchstart", handleNo, { passive: false });
+
+  function launchConfetti() {
+    const colors = ['#ff8fa3', '#ffd6e8', '#ffb703', '#ff6b81', '#ffe0ac', '#f48fb1', '#9b5de5'];
+    for (let i = 0; i < 120; i++) {
+      setTimeout(() => createConfettiPiece(colors), i * 15);
+    }
+  }
+
+  function createConfettiPiece(colors) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti';
+    const size = Math.random() * 8 + 6;
+    piece.style.width = size + 'px';
+    piece.style.height = size + 'px';
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.left = Math.random() * 100 + 'vw';
+    piece.style.opacity = Math.random() + 0.4;
+    const rotation = Math.random() * 360;
+    piece.style.transform = `rotate(${rotation}deg)`;
+    document.body.appendChild(piece);
+
+    const fallDuration = Math.random() * 2 + 2.5;
+    const horizontalDrift = (Math.random() - 0.5) * 200;
+
+    piece.animate([
+      { transform: `translate(0, 0) rotate(${rotation}deg)`, opacity: 1 },
+      { transform: `translate(${horizontalDrift}px, 100vh) rotate(${rotation + 360}deg)`, opacity: 0.8 }
+    ], {
+      duration: fallDuration * 1000,
+      easing: 'ease-in'
+    });
+
+    setTimeout(() => piece.remove(), fallDuration * 1000 + 100);
+  }
+</script>
+
+</body>
+</html>
